@@ -7,15 +7,6 @@ const path = require('path');
 const isDev = require('electron-is-dev');
 require('electron-reload');
 
-const fs = require('fs');
-// console.log("FS:::: ", fs);
-
-console.log("!!!!");
-
-function handle_custom_message() {
-    console.log("Handling custom message")
-}
-
 let mainWindow;
 
 function createWindow() {
