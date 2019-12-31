@@ -1,11 +1,12 @@
 import FileModel from "../models/FileModel";
-
-const parse = require('csv-parse');
+import lineStreamUtil from "line-stream-util";
 
 const remote = window.require("electron").remote;
 
 const fs = remote.require("fs");
 const path = remote.require("path");
+
+const CSV_SEPARATOR = ",";
 
 const getDirEntriesPaths = (dirPath) => {
   return new Promise((resolve, reject) => {
@@ -45,10 +46,11 @@ export const getDirFiles = (path) => {
     .then(logContent)
 };
 
-export const readCsvData = (path) => {
+export const readCsvData = (dataPath) => {
   return new Promise((resolve) => {
-    path = "/home/salty/work/oracle-ui/resources/csv/predictions_e-28_cut.csv";
-    console.log("loading path ", path);
+    dataPath = "/home/salty/work/oracle-ui/resources/csv/predictions_e-28.csv";
+    console.log("loading path ", dataPath);
+
     /*const data = [];
     fs.createReadStream(path)
       .pipe(csvParse({delimiter: ','}))
@@ -59,12 +61,41 @@ export const readCsvData = (path) => {
         resolve(r);
       });
       setTimeout(() => resolve(data), 1000)*/
-    fs.createReadStream(path, {
-      flag: 'a+',
-      encoding: 'ascii',
+    let data = [];
+
+    let batchesProcessed = 0;
+
+    let csvDataHolder = {
+      columns: [],
+      data: [],
+    };
+
+    let allData = "";
+
+    fs.createReadStream(dataPath, {
+      encoding: 'utf-8',
     })
-      .on('data', (row) => {
-        console.log(row);
+      .on('data', (data) => {
+        let rows = data.split("\n");
+
+        if (!batchesProcessed++) {
+          csvDataHolder.columns = rows[0].split(CSV_SEPARATOR);
+          rows = rows.slice(1);
+        }
+
+        rows = rows.map(row => row.split(CSV_SEPARATOR));
+
+        csvDataHolder.data.push(...rows);
+        console.log(csvDataHolder.data.length);
+      })
+      .on('end', (row) => {
+        console.log("end ", row);
+        csvDataHolder.data.forEach((row, index, array) => {
+          if(row.length !== array[0].length) {
+            console.error(`wrong length! index: ${index}, row: ${row}`)
+          }
+        });
+        console.log("done");
       })
   });
 };

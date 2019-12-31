@@ -75,8 +75,10 @@ export class FileBrowser extends React.Component {
 
   handleDoubleClick = (event) => {
     let targetFilePath = event.currentTarget.getAttribute("data-path");
+    console.log("targetFilePath", targetFilePath);
     let file = this.state.files.find(file => file.path === targetFilePath);
-    if (file.isDirectory) {
+    let parentDirChosen = !file;
+    if (parentDirChosen || file.isDirectory) {
       this.requestFilesList(targetFilePath);
     } else if (file.extension === ".csv") {
       readCsvData(targetFilePath);
