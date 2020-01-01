@@ -1,4 +1,6 @@
 import React from "react";
+import { Subject } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
 
 const DEFAULT_WINDOW_SIZE = 50;
 const DO_NOTHING = () => {
@@ -17,7 +19,20 @@ export default class ChartControls extends React.Component {
     };
 
     this.chartContainerRef = React.createRef();
+    this.mouseMoveStream = new Subject()
 
+  }
+
+  componentDidMount() {
+    this.mouseMoveStream
+      .pipe(
+        throttleTime(100)
+      )
+      .subscribe(event => {
+        this.handleMouseMove(event)
+      });
+
+    this.chartContainerRef.current.addEventListener("wheel", this.handleWheel); // this way page not scrolls
   }
 
   render() {
@@ -39,7 +54,8 @@ export default class ChartControls extends React.Component {
                 onMouseDown={this.handleDragStart}
                 onMouseLeave={this.handleDragEnd}
                 onMouseUp={this.handleDragEnd}
-                onMouseMove={this.getDragHandler()}
+                onMouseUpCapture={this.handleDragEnd}
+                onMouseMove={this.getThrottledMouseMoveHandler()}
     >
       {renderChart(width, height, shownArea)}
     </div>;
@@ -67,8 +83,8 @@ export default class ChartControls extends React.Component {
     this.setState({isDraggingOffset: false, lastX: null})
   };
 
-  getDragHandler = () => {
-    return this.state.isDraggingOffset ? this.handleMouseMove : DO_NOTHING;
+  getThrottledMouseMoveHandler = () => {
+    return this.state.isDraggingOffset ? (event) => this.mouseMoveStream.next(event) : DO_NOTHING;
   };
 
   handleMouseMove = (e) => {
@@ -89,5 +105,17 @@ export default class ChartControls extends React.Component {
     let nextOffset = Math.max(0, offset + deltaOffset);
     this.setState({offset: nextOffset, lastX: e.clientX})
   };
+
+  handleWheel = (e) => {
+    e.preventDefault();
+
+    let smoothing = 3;
+
+    const {windowSize} = this.state;
+    let delta = e.deltaY;
+    let relativeDelta = Math.round(delta * windowSize / 360 / smoothing);
+    console.log("handleWheel relative delta", relativeDelta);
+    this.setState({offset: Math.max(0, this.state.offset + relativeDelta)})
+  }
 
 }

@@ -56,7 +56,7 @@ export default [
     "isDirectory": true
   },
   {
-    "name": "start.js",
+    "name": "electron.js",
     "extension": ".js",
     "size": 985,
     "modified": new Date(),

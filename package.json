@@ -1,21 +1,28 @@
 {
   "name": "oracle-ui",
   "version": "0.1.0",
+  "author": "philip-q <kononenko.philip@gmail.com>",
   "private": true,
-  "main": "start.js",
+  "main": "public/electron.js",
   "homepage": "./",
   "build": {
     "appId": "some.id.ofyours",
     "directories": {
       "buildResources": "assets"
     },
-    "win": {
-      "category": "your.app.category.type",
-      "iconUrl": "path-to-icon.png"
-    },
-    "mac": {
-      "category": "your.app.category.type",
-      "iconUrl": "path-to-icon.png"
+    "files": [
+      "build/**/*",
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "./public/electron-starter.js"
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "./icon.svg"
     }
   },
   "dependencies": {
@@ -25,8 +32,9 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "csv-parse": "3.2.0",
     "dateformat": "^3.0.3",
+    "electron-is-dev": "^1.1.0",
+    "electron-reload": "^1.5.0",
     "file-system": "^2.2.2",
     "line-stream-util": "^1.2.2",
     "node-sass": "^4.13.0",
@@ -36,10 +44,12 @@
     "readable-stream": "^3.4.0",
     "recharts": "^2.0.0-beta.1",
     "remote": "^0.2.6",
+    "rxjs": "^6.5.4",
     "typescript": "^3.7.4"
   },
   "scripts": {
     "electron": "cross-env NODE_ENV=dev nodemon --exec \\\"\\\"electron .\\\"\\\"",
+    "electron-pack": "build --em.main=build/electron.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -63,8 +73,6 @@
   "devDependencies": {
     "electron": "^7.1.7",
     "electron-builder": "^21.2.0",
-    "electron-is-dev": "^1.1.0",
-    "electron-reload": "^1.5.0",
     "nodemon": "^2.0.2"
   }
 }
