@@ -1,4 +1,4 @@
-.SimulationResultContent {
+.SimulationResultView {
   padding-top: 82px;
   position: absolute;
   top: 0;
@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
 }
-.SimulationResultContent__header {
+.SimulationResultView__header {
   display: flex;
   flex-direction: row;
   position: absolute;
@@ -18,25 +18,35 @@
   padding: 1rem 0;
 }
 
-.SimulationResultContent__total {
+.SimulationResultView__total {
 }
 
-.SimulationResultContent__sorting-buttons {
+.SimulationResultView__sorting-buttons {
   display: flex;
   justify-content: flex-end;
   flex-grow: 1;
   font-size: 20px;
 }
 
-.SimulationResultContent__sorting-button {
+.SimulationResultView__sorting-button {
   margin-left: 1rem;
   padding: 0.5rem;
   width: 36px;
   text-align: center;
 }
 
-.SimulationResultContent__sorting-button--selected, .SimulationResultContent__sorting-button--order {
+.SimulationResultView__sorting-button--selected, .SimulationResultView__sorting-button--order {
   color: #fd7029;
+}
+
+.SimulationResultView__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.SimulationResultView__content .SimulationChart,
+.PairsPerformanceList {
+  flex: 1
 }
 
 
@@ -44,12 +54,12 @@
   display: flex;
   flex-direction: column;
   overflow: auto;
-  position: absolute;
+  padding-right: 0.5rem;
+  /*position: absolute;
   top: 5rem;
   bottom: 0.5rem;
   right: 0;
-  left: 0;
-  padding-right: 0.5rem;
+  left: 0;*/
 }
 
 .PairPerformance {
@@ -59,11 +69,11 @@
   border-bottom: 1px solid #eee;
 }
 
-.SimulationResultContent__metric--profit, .PairPerformance--profit {
+.SimulationResultView__metric--profit, .PairPerformance--profit {
   color: #2ecc71;
 }
 
-.SimulationResultContent__metric--loss, .PairPerformance--loss {
+.SimulationResultView__metric--loss, .PairPerformance--loss {
   color: #eb4d4b;
 }
 

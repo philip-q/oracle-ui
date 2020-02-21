@@ -6,6 +6,7 @@ import SimulationsSummary from "../../models/SimulationSummaryModel";
 import {SimulationMetric} from "../../models/enumerations/SimulationMetric";
 import {SortOrder} from "../../models/enumerations/SortOrder";
 import SimulationPerformanceModel from "../../models/SimulationPerformanceModel";
+import SimulationChart from "./SimulationChart";
 
 interface SimulationResultViewProps {
 	file: FileModel
@@ -34,21 +35,24 @@ export default class SimulationResultView extends React.Component<SimulationResu
 	}
 	
 	render() {
-		return <div className="SimulationResultContent">
+		return <div className="SimulationResultView">
 			{this.renderHeader()}
-			{this.renderPairsPerformanceList()}
+			<div className="SimulationResultView__content">
+				{this.renderChart()}
+				{this.renderPairsPerformanceList()}
+			</div>
 		</div>
 	}
 	
 	renderHeader() {
-		return <div className="SimulationResultContent__header">
+		return <div className="SimulationResultView__header">
 			{this.renderTotalPerformance()}
 			{this.renderSortingButtons()}
 		</div>
 	}
 	
 	renderSortingButtons() {
-		return <div className="SimulationResultContent__sorting-buttons">
+		return <div className="SimulationResultView__sorting-buttons">
 			{this.renderSortingMetricButton(SimulationMetric.USD_PERFORMANCE, "fa-dollar-sign")}
 			{this.renderSortingMetricButton(SimulationMetric.PROFIT_AREA, "fa-chart-area")}
 			{this.renderSortingOrderButton()}
@@ -58,7 +62,7 @@ export default class SimulationResultView extends React.Component<SimulationResu
 	renderSortingMetricButton(metric: SimulationMetric, iconClass: string) {
 		let isSelected = this.state.sortingMetric === metric;
 		return <span
-			className={`SimulationResultContent__sorting-button ${isSelected ? "SimulationResultContent__sorting-button--selected" : ""}`}
+			className={`SimulationResultView__sorting-button ${isSelected ? "SimulationResultView__sorting-button--selected" : ""}`}
 			onClick={() => {
 				console.log("Sorting metric changed to ", metric);
 				this.setState({sortingMetric: metric})
@@ -71,7 +75,7 @@ export default class SimulationResultView extends React.Component<SimulationResu
 	renderSortingOrderButton() {
 		const {sortingOrder} = this.state;
 		return <span
-			className="SimulationResultContent__sorting-button SimulationResultContent__sorting-button--order"
+			className="SimulationResultView__sorting-button SimulationResultView__sorting-button--order"
 			onClick={() => this.setState({sortingOrder: sortingOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC})}
 		>
 			<i className={`fas ${sortingOrder === SortOrder.ASC ? "fa-sort-amount-up-alt" : "fa-sort-amount-down"}`}/>
@@ -80,15 +84,15 @@ export default class SimulationResultView extends React.Component<SimulationResu
 	
 	renderTotalPerformance() {
 		let totalPerformance = this.getSelectedPairsTotalPerformance();
-		return <div className="SimulationResultContent__total">
+		return <div className="SimulationResultView__total">
 			<div
 				key="usd-performance"
-				className={`SimulationResultContent__metric SimulationResultContent__metric--${totalPerformance.usdPerformance > 0 ? "profit" : "loss"}`}>
+				className={`SimulationResultView__metric SimulationResultView__metric--${totalPerformance.usdPerformance > 0 ? "profit" : "loss"}`}>
 				Usd total performance: {formatNumber(totalPerformance.usdPerformance)}
 			</div>
 			<div
 				key="pa-performance"
-				className={`SimulationResultContent__metric SimulationResultContent__metric--${totalPerformance.profitArea > 0 ? "profit" : "loss"}`}>
+				className={`SimulationResultView__metric SimulationResultView__metric--${totalPerformance.profitArea > 0 ? "profit" : "loss"}`}>
 				Total performance area: {formatNumber(totalPerformance.profitArea)}
 			</div>
 		</div>
@@ -121,6 +125,10 @@ export default class SimulationResultView extends React.Component<SimulationResu
 			/>
 		</div>
 	};
+	
+	renderChart() {
+		return <SimulationChart entries={this.getPairPerformanceEntries()}/>
+	}
 	
 	isPairSelected = (pair: String): boolean => {
 		return this.state.selectedPairsKeys.indexOf(pair) >= 0;

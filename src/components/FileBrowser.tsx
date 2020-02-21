@@ -17,7 +17,7 @@ export class FileBrowser extends React.Component<{}, FileBrowserState> {
     super(props);
 
     this.state = {
-      path: "../oracle/output/scenarios/multiple_currencies/400_1l_do/simulations/bak/1_86400",
+      path: "../oracle/output/scenarios/multiple_currencies/400_1l_do/simulations/1_86400",
       files: [],
       csvHolder: null
     }

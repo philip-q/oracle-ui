@@ -51,19 +51,17 @@ export const getDirFilesMetadata = (path) => {
 };
 
 export const readFileContent = (fileMetadata) => {
-	switch (fileMetadata.extension) {
-		case ".csv":
-			readCsvData(fileMetadata);
-			break;
-		
-		case ".simstat":
-			readSimulationStats(fileMetadata);
-			break;
-		
-		default:
-			break;
-		
+	if (fileMetadata.extension === ".csv") {
+		readCsvData(fileMetadata);
+		return;
 	}
+	
+	if (fileMetadata.extension === ".simstat" || fileMetadata.name.startsWith("mc_sim_progress"))  {
+		readSimulationStats(fileMetadata);
+		return;
+	}
+	
+	console.log(`Don't know how to handle ${fileMetadata.name}`)
 	
 };
 
