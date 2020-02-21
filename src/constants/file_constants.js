@@ -1,0 +1,1 @@
+export const SIMULATION_STATISTICS_FILE_EXTENSION = "simstat";

@@ -1,9 +1,8 @@
-import {path} from "../service/adapters/safeAdapters"
+import fspath from "path";
 
-export default class FileModel {
+export default class FileMetadataModel {
 
   path;
-  name;
   size;
   modificationDate;
   isDirectory;
@@ -16,10 +15,10 @@ export default class FileModel {
   }
 
   get name() {
-    return path.basename(this.path);
+    return fspath.basename(this.path);
   }
 
   get extension() {
-    return path.extname(this.path)
+    return fspath.extname(this.path)
   }
 }

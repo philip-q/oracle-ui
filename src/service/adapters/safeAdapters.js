@@ -1,12 +1,11 @@
-import path from "path";
+import fspath from "path";
 import fs from "fs";
+import FileMetadataModel from "../../models/FileMetadataModel";
 
-console.log(fs);
-
-if(!path) {
+if(!fspath) {
   console.log("Electron path import");
   const remote = window.require("electron").remote;
-  path = remote.require("path");
+  fspath = remote.require("path");
   const fs = remote.require("fs");
   // eslint-disable-next-line no-undef
   define("fs", () => {
@@ -40,15 +39,23 @@ const getFileService = () => {
   }
 };
 
-const getDirFiles = (path) => {
-  return getFileService().then(fs => fs.getDirFiles(path));
+const getDirFilesMetadata = (path) => {
+  return getFileService().then(fs => fs.getDirFilesMetadata(path));
 };
 
 const readCsvData = (path) => {
   return getFileService().then(fs => fs.readCsvData(path));
 };
 
+export const readFileContent = (fileMetaData) => {
+  if (fileMetaData.extension === ".simstat") {
+    getFileService().then(fs => fs.readFileContent(fileMetaData));
+  }
+  
+  return Promise.resolve();
+};
+
 export {
-  path,
-  getDirFiles, readCsvData
+  fspath,
+  getDirFilesMetadata, readCsvData
 };

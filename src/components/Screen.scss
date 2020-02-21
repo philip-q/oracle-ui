@@ -1,0 +1,38 @@
+.Screen {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  background-color: #fff;
+  padding: 1rem;
+}
+
+.Screen__header {
+  text-align: right;
+  padding-right: 5px;
+  font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+}
+
+.Screen__content {
+  position: fixed;
+  left: 1rem;
+  right: 0;
+  top: 3.5rem;
+  bottom: 0;
+  overflow: auto;
+  padding-right: 1rem;
+}
+
+.Screen__title {
+  font-weight: 700;
+}

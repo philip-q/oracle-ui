@@ -1,0 +1,88 @@
+.SimulationResultContent {
+  padding-top: 82px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.SimulationResultContent__header {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  top: 0;
+  left: 0;
+  right: 8px;
+  padding: 1rem 0;
+}
+
+.SimulationResultContent__total {
+}
+
+.SimulationResultContent__sorting-buttons {
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
+  font-size: 20px;
+}
+
+.SimulationResultContent__sorting-button {
+  margin-left: 1rem;
+  padding: 0.5rem;
+  width: 36px;
+  text-align: center;
+}
+
+.SimulationResultContent__sorting-button--selected, .SimulationResultContent__sorting-button--order {
+  color: #fd7029;
+}
+
+
+.PairsPerformanceList {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  position: absolute;
+  top: 5rem;
+  bottom: 0.5rem;
+  right: 0;
+  left: 0;
+  padding-right: 0.5rem;
+}
+
+.PairPerformance {
+  display: flex;
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.SimulationResultContent__metric--profit, .PairPerformance--profit {
+  color: #2ecc71;
+}
+
+.SimulationResultContent__metric--loss, .PairPerformance--loss {
+  color: #eb4d4b;
+}
+
+.PairPerformance--warn {
+  color: #3498db;
+}
+
+.PairPerformance__index {
+  flex: 0.2;
+}
+
+.PairPerformance__name,
+.PairPerformance__usd-performance,
+.PairPerformance__profit-area,
+.PairPerformance__selector {
+  flex: 1;
+}
+
+.PairPerformance__selector {
+  text-align: right;
+  padding-right: 3px;
+}
