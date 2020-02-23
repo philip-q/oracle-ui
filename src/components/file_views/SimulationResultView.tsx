@@ -127,7 +127,9 @@ export default class SimulationResultView extends React.Component<SimulationResu
 	};
 	
 	renderChart() {
-		return <SimulationChart entries={this.getPairPerformanceEntries()}/>
+		const {selectedPairsKeys} = this.state;
+		let chartData = this.getPairPerformanceEntries().filter(([key, perf ]) => selectedPairsKeys.indexOf(key) >=0);
+		return <SimulationChart entries={chartData}/>
 	}
 	
 	isPairSelected = (pair: String): boolean => {

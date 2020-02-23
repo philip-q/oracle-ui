@@ -24,7 +24,7 @@ export default class SimulationChart extends React.Component<SimulationChartProp
 				<YAxis />
 				<CartesianGrid/>
 				<Tooltip cursor={{strokeDasharray: '3 3'}}/>
-				<Bar type="monotone" dataKey="performance" fill="#8884d8" barSize={40}>
+				<Bar type="monotone" dataKey="performance" fill="#8884d8" barSize={20}>
 					{/*<LabelList dataKey="label" position="insideTop" angle="-90"  />*/}
 				</Bar>
 			</BarChart>
