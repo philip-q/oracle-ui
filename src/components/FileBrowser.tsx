@@ -1,9 +1,10 @@
 import React from "react";
+import fspath from "path";
+
 import {File} from "./File";
-import {fspath} from "../service/adapters/safeAdapters";
-// import CsvDetails from "./file_views/csv_prediction_chart/CsvDetails";
 import FileMetadataModel from "../models/FileMetadataModel";
-import * as fileService  from "../service/fileService";
+import FileService from "../service/fs/FileService";
+import FileContentReader from "../service/fs/FileContentReader";
 
 interface FileBrowserState {
   path: string;
@@ -17,7 +18,7 @@ export class FileBrowser extends React.Component<{}, FileBrowserState> {
     super(props);
 
     this.state = {
-      path: "../oracle/output/scenarios/multiple_currencies/400_1l_do/simulations/37_86400",
+      path: "../oracle/output/scenarios/multiple_currencies/sl700_n400_l1_do/simulations/74_86400",
       files: [],
       csvHolder: null
     }
@@ -45,7 +46,7 @@ export class FileBrowser extends React.Component<{}, FileBrowserState> {
   }
 
   requestFilesList(path) {
-    fileService.getDirFilesMetadata(path).then(files => {
+    FileService.getDirFilesMetadata(path).then(files => {
       files.sort(this.sortFunction(false));
       this.setState({files, path: path})
     });
@@ -98,7 +99,7 @@ export class FileBrowser extends React.Component<{}, FileBrowserState> {
       return;
     }
   
-    fileService.readFileContent(fileMetadata);
+    FileContentReader.readFileContent(fileMetadata);
 
   };
 

@@ -23,5 +23,8 @@
   },
   "include": [
     "src"
-  ]
+  ],
+  "errorReporting": {
+    "excludeCodes": [2322]
+  }
 }

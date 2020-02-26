@@ -1,53 +1,45 @@
 import React from "react";
-import FileModel from "../../models/FileModel";
-import {formatNumber} from "../../util/formatting";
-import Checkbox from "../Checkbox";
-import SimulationsSummary from "../../models/SimulationSummaryModel";
-import {SimulationMetric} from "../../models/enumerations/SimulationMetric";
-import {SortOrder} from "../../models/enumerations/SortOrder";
-import SimulationPerformanceModel from "../../models/SimulationPerformanceModel";
+import SimulationPerformanceModel from "../../../models/SimulationPerformanceModel";
 import SimulationChart from "./SimulationChart";
+import SimulationsSummary from "../../../models/SimulationSummaryModel";
+import {SimulationMetric} from "../../../models/enumerations/SimulationMetric";
+import {SortOrder} from "../../../models/enumerations/SortOrder";
+import {formatNumber} from "../../../util/formatting";
+import Checkbox from "../../Checkbox";
 
-interface SimulationResultViewProps {
-	file: FileModel
-}
-
-
-interface SimulationResultViewState {
+interface TotalPairsSimulationProgressProps {
 	summary: SimulationsSummary;
 	selectedPairsKeys: Array<String>;
+	onChartBarClick: (pairKey: string) => void;
+	onCurrencyPairCheck: (pairKey: string) => void;
+}
+
+interface TotalPairsSimulationProgressState {
 	sortingMetric: SimulationMetric;
 	sortingOrder: SortOrder;
 }
 
-export default class SimulationResultView extends React.Component<SimulationResultViewProps, SimulationResultViewState> {
+export default class TotalPairsSimulationProgress extends React.Component<TotalPairsSimulationProgressProps, TotalPairsSimulationProgressState> {
 	
-	constructor(props: SimulationResultViewProps) {
+	constructor(props: TotalPairsSimulationProgressProps) {
 		super(props);
 		
-		let summary = new SimulationsSummary(props.file);
 		this.state = {
-			summary,
-			selectedPairsKeys: Array.from(summary.pairPerformances.keys()),
 			sortingMetric: SimulationMetric.USD_PERFORMANCE,
 			sortingOrder: SortOrder.DESC
 		}
 	}
 	
 	render() {
-		return <div className="SimulationResultView">
-			{this.renderHeader()}
-			<div className="SimulationResultView__content">
+		return <div className="TotalPairsSimulationProgress">
+			<div className="TotalPairsSimulationProgress__sorting-buttons">
+				{this.renderSortingButtons()}
+			</div>
+			
+			<div className="TotalPairsSimulationProgress__content">
 				{this.renderChart()}
 				{this.renderPairsPerformanceList()}
 			</div>
-		</div>
-	}
-	
-	renderHeader() {
-		return <div className="SimulationResultView__header">
-			{this.renderTotalPerformance()}
-			{this.renderSortingButtons()}
 		</div>
 	}
 	
@@ -63,10 +55,7 @@ export default class SimulationResultView extends React.Component<SimulationResu
 		let isSelected = this.state.sortingMetric === metric;
 		return <span
 			className={`SimulationResultView__sorting-button ${isSelected ? "SimulationResultView__sorting-button--selected" : ""}`}
-			onClick={() => {
-				console.log("Sorting metric changed to ", metric);
-				this.setState({sortingMetric: metric})
-			}}
+			onClick={() => this.setState({sortingMetric: metric})}
 		>
 			<i className={`fas ${iconClass}`}/>
 		</span>
@@ -82,20 +71,10 @@ export default class SimulationResultView extends React.Component<SimulationResu
 		</span>
 	}
 	
-	renderTotalPerformance() {
-		let totalPerformance = this.getSelectedPairsTotalPerformance();
-		return <div className="SimulationResultView__total">
-			<div
-				key="usd-performance"
-				className={`SimulationResultView__metric SimulationResultView__metric--${totalPerformance.usdPerformance > 0 ? "profit" : "loss"}`}>
-				Usd total performance: {formatNumber(totalPerformance.usdPerformance)}
-			</div>
-			<div
-				key="pa-performance"
-				className={`SimulationResultView__metric SimulationResultView__metric--${totalPerformance.profitArea > 0 ? "profit" : "loss"}`}>
-				Total performance area: {formatNumber(totalPerformance.profitArea)}
-			</div>
-		</div>
+	renderChart() {
+		const {selectedPairsKeys, onChartBarClick} = this.props;
+		let chartData = this.getPairPerformanceEntries().filter(([key, perf]) => selectedPairsKeys.indexOf(key) >= 0);
+		return <SimulationChart entries={chartData} onBarClick={onChartBarClick}/>
 	}
 	
 	renderPairsPerformanceList = () => {
@@ -121,46 +100,26 @@ export default class SimulationResultView extends React.Component<SimulationResu
 				className="PairPerformance__selector"
 				checked={isSelected}
 				data-pair-key={pairKey}
-				onChange={(nextChecked) => this.handlePairPerformanceSelectorClick(pairKey)}
+				onChange={() => this.props.onCurrencyPairCheck(pairKey as string)}
 			/>
 		</div>
 	};
 	
-	renderChart() {
-		const {selectedPairsKeys} = this.state;
-		let chartData = this.getPairPerformanceEntries().filter(([key, perf ]) => selectedPairsKeys.indexOf(key) >=0);
-		return <SimulationChart entries={chartData}/>
-	}
 	
-	isPairSelected = (pair: String): boolean => {
-		return this.state.selectedPairsKeys.indexOf(pair) >= 0;
-	};
-	
-	handlePairPerformanceSelectorClick = (pairKey) => {
-		if (this.isPairSelected(pairKey)) {
-			this.setState({selectedPairsKeys: this.state.selectedPairsKeys.filter(item => item !== pairKey)})
-		} else {
-			this.setState({selectedPairsKeys: this.state.selectedPairsKeys.concat(pairKey)})
-		}
-	};
 	
 	private getPairPerformanceEntries = () => {
-		const {summary, sortingOrder, sortingMetric} = this.state;
+		const {sortingOrder, sortingMetric} = this.state;
 		let sortFunction = sortingMetric === SimulationMetric.USD_PERFORMANCE ? this.sortByUsdPerformance : this.sortByProfitArea;
 		if (sortingOrder === SortOrder.DESC) {
 			sortFunction = this.desc(sortFunction);
 		}
 		
-		return Array.from(summary.pairPerformances.entries()).sort(sortFunction)
+		return Array.from(this.props.summary.totalPairPerformances.entries()).sort(sortFunction)
 	};
 	
-	private getSelectedPairsTotalPerformance = (): SimulationPerformanceModel => {
-		return this.state.selectedPairsKeys.reduce<SimulationPerformanceModel>((sum, item) =>
-				sum.addPerformanceResult(this.state.summary.pairPerformances.get(item) || new SimulationPerformanceModel()),
-			new SimulationPerformanceModel()
-		);
+	isPairSelected = (pair: String): boolean => {
+		return this.props.selectedPairsKeys.indexOf(pair) >= 0;
 	};
-	
 	
 	private sortByUsdPerformance = (e1, e2) => e1[1].usdPerformance - e2[1].usdPerformance;
 	private sortByProfitArea = (e1, e2) => e1[1].profitArea - e2[1].profitArea;

@@ -19,6 +19,7 @@
 }
 
 .SimulationResultView__total {
+  flex: 1;
 }
 
 .SimulationResultView__sorting-buttons {
@@ -41,12 +42,18 @@
 
 .SimulationResultView__content {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 
-.SimulationResultView__content .SimulationChart,
-.PairsPerformanceList {
-  flex: 1
+.SimulationResultView__navigation {
+  flex: 3 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.SimulationResultView__navigation__pair {
+  flex: 1;
 }
 
 

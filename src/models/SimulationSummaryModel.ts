@@ -3,29 +3,33 @@ import {currencyPairKey} from "../util/naming";
 import SimulationPerformanceModel from "./SimulationPerformanceModel";
 
 export default class SimulationsSummary {
-	pairPerformances: Map<String, SimulationPerformanceModel>;
+	totalPairPerformances: Map<String, SimulationPerformanceModel>;
+	pairPeriodPerformances: Map<String, Map<number, SimulationPerformanceModel>>;
 	
 	constructor(file: FileModel) {
-		this.pairPerformances = new Map<String, SimulationPerformanceModel>();
+		this.totalPairPerformances = new Map<String, SimulationPerformanceModel>();
+		this.pairPeriodPerformances = new Map<String, Map<number, SimulationPerformanceModel>>();
 		this.calculateSummary(file);
-	}
-	
-	public setCurrencyPairPerformance(base: string, quote: string, performance: SimulationPerformanceModel) {
-		this.pairPerformances.set(currencyPairKey(base, quote), performance);
 	}
 	
 	private calculateSummary(file: FileModel) {
 		for (let base of Object.keys(file.content)) {
 			for (let quote of Object.keys(file.content[base])) {
 				
-				let pairPerformance = new SimulationPerformanceModel();
-				
-				for (let simulationPeriodStart of Object.keys(file.content[base][quote])) {
-					let periodResult = file.content[base][quote][simulationPeriodStart];
-					pairPerformance.addPeriodResult(periodResult.usd_performance, periodResult.profit_area)
+				let totalUsd = 0;
+				let totalProfitArea = 0;
+				let pairPeriodPerformances = new Map<number, SimulationPerformanceModel>();
+
+				for (let simulationPeriodStart of Object.keys(file.content[base][quote]).sort()) {
+					const {usd_performance, profit_area} = file.content[base][quote][simulationPeriodStart];
+					totalUsd += usd_performance;
+					totalProfitArea += profit_area;
+					pairPeriodPerformances.set(Number(simulationPeriodStart), new SimulationPerformanceModel(usd_performance, profit_area));
 				}
 				
-				this.setCurrencyPairPerformance(base, quote, pairPerformance)
+				let key = currencyPairKey(base, quote);
+				this.totalPairPerformances.set(key, new SimulationPerformanceModel(totalUsd, totalProfitArea));
+				this.pairPeriodPerformances.set(key, pairPeriodPerformances);
 			}
 		}
 	}

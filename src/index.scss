@@ -1,7 +1,10 @@
 @import "./App.scss";
+@import "components/Button.scss";
 @import "components/File.scss";
 @import "components/FileBrowser.scss";
-@import "components/file_views/SimulationResultView.scss";
+@import "components/file_views/simulation_result/SimulationResultView";
+@import "components/file_views/simulation_result/SimulationChart";
+@import "components/file_views/simulation_result/TotalPairsSimulationProgress";
 @import "components/Screen.scss";
 
 body {
