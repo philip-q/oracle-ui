@@ -78,20 +78,32 @@ class SimulationResultView extends React.Component<SimulationResultViewProps, Si
 		const {prevSimulationResultFileMetadata: prev, nextSimulationResultFileMetadata: next} = this.props;
 		
 		let buttons: JSX.Element[] = [];
+		let selectedPairDetails: any = null;
 		
 		if (selectedPairKey) {
+			let dataLength = this.state.summary.pairPeriodPerformances.get(selectedPairKey)?.size || 0;
+			let pipError = this.state.summary.totalPairPerformances.get(selectedPairKey)?.pipError || NaN;
+			console.log(this.state.summary.totalPairPerformances.get(selectedPairKey));
+			selectedPairDetails = [
+				<span className="SimulationResultView__navigation__pair" key="len">{`${selectedPairKey} (${dataLength})`}</span>,
+				<span className="SimulationResultView__mean-pip-error" key="mpe">{`MPE: ${pipError.toFixed(2)}`}</span>
+			];
+			
 			const {prev, next} = getNeighbourItems(selectedPairKey, selectedPairsKeys);
 			
 			buttons.push(
 				<Button
+					key="close-pair-details"
 					onClick={() => this.setState({selectedPairKey: null})}
 					text={`X`}>
 				</Button>,
 				<Button
+					key="prev-pair-details"
 					onClick={() => this.setState({selectedPairKey: prev as string})}
 					text={`<- ${prev}`}>
 				</Button>,
 				<Button
+					key="next-pair-details"
 					onClick={() => this.setState({selectedPairKey: next as string})}
 					text={`${next} -> `}>
 				</Button>
@@ -100,17 +112,19 @@ class SimulationResultView extends React.Component<SimulationResultViewProps, Si
 		
 		buttons.push(
 			<Button
+				key="prev-simulation-details-file"
 				onClick={() => this.handleLoadSimDataClick("prev")}
 				text={`<- ${prev ? getEpochFromPath(prev.path) : ""}`}>
 			</Button>,
 			<Button
+				key="next-simulation-details-file"
 				onClick={() => this.handleLoadSimDataClick("next")}
 				text={`${next ? getEpochFromPath(next.path) : ""} ->`}>
 			</Button>
 		);
 		
 		return <div className="SimulationResultView__navigation">
-			{selectedPairKey && <span className="SimulationResultView__navigation__pair">{selectedPairKey}</span>}
+			{selectedPairDetails}
 			{buttons}
 		</div>
 	}
@@ -171,8 +185,12 @@ class SimulationResultView extends React.Component<SimulationResultViewProps, Si
 	
 	private getSelectedPairsTotalPerformance = (): SimulationPerformanceModel => {
 		return this.state.selectedPairsKeys.reduce<SimulationPerformanceModel>((sum, item) => {
-			let {usdPerformance, profitArea} = this.state.summary.totalPairPerformances.get(item) || new SimulationPerformanceModel();
-			return new SimulationPerformanceModel(usdPerformance + sum.usdPerformance, profitArea + sum.profitArea)
+			let {usdPerformance, profitArea, pipError} = this.state.summary.totalPairPerformances.get(item) || new SimulationPerformanceModel();
+			return new SimulationPerformanceModel(
+				usdPerformance + sum.usdPerformance,
+				profitArea + sum.profitArea,
+				pipError + sum.pipError
+			)
 		}, new SimulationPerformanceModel());
 	};
 	

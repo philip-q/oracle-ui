@@ -9,3 +9,12 @@
 .Button + .Button {
   margin-left: 0.5rem;
 }
+
+.Button:focus {
+  outline: none;
+}
+
+.Button:active {
+  box-shadow: 0 0 1px 0 #fd7029;
+  outline: 0;
+}

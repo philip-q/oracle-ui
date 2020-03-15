@@ -16,16 +16,18 @@ export default class PairSimulationProgress extends React.Component<PairSimulati
 	
 	renderChart() {
 		let data = this.prepareData();
-		let length = Object.keys(data).length;
-		console.log("length = ", length);
 		return <BarChart data={data} margin={{top: 10, right: 10, left: 10, bottom: 10}} height={400} width={1200} barGap={5}
-										 barCategoryGap={5}>
+										 barCategoryGap={5} onClick={(barElement) => console.log(barElement.activePayload[0].payload)}>
 			<CartesianGrid/>
-			<Tooltip cursor={{strokeDasharray: '3 3'}}/>
+			<Tooltip cursor={{strokeDasharray: '3 3'}} formatter={this.formatTooltip}/>
 			<Bar type="monotone" dataKey="performance" fill="#8884d8" barSize={5}/>
 			{/*<Bar type="monotone" dataKey="area" fill="#2ecc71" barSize={5}/>*/}
 		</BarChart>
 	}
+	
+	formatTooltip = (value, name, {payload: {start, performance, area, pipError}}) => {
+		return [`\nstart: ${start} \nperformance: ${performance.toFixed(2)}$ \narea: ${area.toFixed(2)} \npip error: ${pipError}`, "Period performance"]
+	};
 	
 	prepareData = () => {
 		const {progress} = this.props;
@@ -37,10 +39,12 @@ export default class PairSimulationProgress extends React.Component<PairSimulati
 		let maxAbsUsd = Math.max.apply(null, absUsd);
 		let normFactor = maxAbsProfitArea / maxAbsUsd;
 		
-		return progressEntries.map(([k, performance], index) => {
+		return progressEntries.map(([start, performance], index) => {
 			return {
+				start,
 				area: performance.profitArea / normFactor,
-				performance: Number(performance.usdPerformance.toFixed(2))
+				performance: Number(performance.usdPerformance.toFixed(2)),
+				pipError: Number(performance.pipError)
 			}
 		})
 	};
